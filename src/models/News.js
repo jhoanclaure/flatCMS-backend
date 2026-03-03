@@ -2,18 +2,12 @@ const mongoose = require("mongoose");
 
 const newsSchema = new mongoose.Schema(
   {
-    title: {
-      type: String,
-      trim: true,
-    },
+    title: String,
     content: {
       type: String,
       required: true,
     },
-    imageUrl: {
-      type: String,
-      default: "",
-    },
+    imageUrl: String,
   },
   { timestamps: true }
 );

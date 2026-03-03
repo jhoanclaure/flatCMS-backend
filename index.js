@@ -11,7 +11,7 @@ app.get("/", (req, res) => {
   res.send("Servidor funcionando correctamente ");
 });
 
-const PORT = 3001;
+const PORT = 4000;
 
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`Servidor ejecutándose en http://localhost:${PORT}`);

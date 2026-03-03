@@ -1,54 +1,40 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const upload = require('../config/cloudinary');
+const upload = require("../config/cloudinary");
+const News = require("../models/News"); 
 
-// El nombre 'image' debe coincidir con el formData.append('image', file) del frontend
-router.post('/api/news', upload.single('image'), async (req, res) => {
+router.post("/", upload.single("image"), async (req, res) => {
   try {
-    // req.body contiene los campos de texto (title, content)
     const { title, content } = req.body;
-    let imageUrl = '';
 
-    // Si se subió una imagen, Cloudinary devuelve la URL de la nube en req.file.path
+    let imageUrl = "";
+
     if (req.file) {
-      imageUrl = req.file.path;
+      imageUrl = req.file.path; // URL Cloudinary
     }
 
-    // Aquí guardas la información en tu base de datos
-    const newPost = {
-      title: title || '',
-      description: content, // En tu tipo Frontend (news.types.ts) tienes 'description'
-      imageUrl: imageUrl,   // Tu frontend espera imageUrl
-      createdAt: new Date().toISOString()
-    };
+    const savedNews = await News.create({
+      title: title || "",
+      content,
+      imageUrl,
+    });
 
-    // Ejemplo con MongoDB (Mongoose):
-    // const postGuardado = await NewsModel.create(newPost);
-
-    res.status(201).json(newPost);
+    res.status(201).json(savedNews);
   } catch (error) {
-    console.error("Error en el servidor:", error);
+    console.error("Error guardando en Mongo:", error);
     res.status(500).json({ message: "Error al crear la noticia" });
   }
 });
 
-router.get('/api/news', async (req, res) => {
+// GET /api/news
+router.get("/", async (req, res) => {
   try {
-    // Aquí deberías consultar tu base de datos. 
-    // Por ahora enviaremos un arreglo vacío o datos de prueba para que no de error.
-    const news = [
-       {
-          id: "1",
-          title: "Noticia desde el Backend",
-          description: "Si ves esto, la conexión funciona.",
-          createdAt: new Date().toISOString(),
-       }
-    ];
+    const news = await News.find().sort({ createdAt: -1 });
     res.status(200).json(news);
   } catch (error) {
+    console.error("Error obteniendo noticias:", error);
     res.status(500).json({ message: "Error al obtener noticias" });
   }
 });
 
-// ... aquí debajo va el router.post('/api/news', upload.single('image'), ...) que hicimos antes
 module.exports = router;
