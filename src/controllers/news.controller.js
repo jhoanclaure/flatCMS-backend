@@ -2,7 +2,13 @@ const News = require("../models/News");
 
 const createNews = async (req, res) => {
   try {
-    const { title, content, imageUrl } = req.body;
+    const { title, content } = req.body;
+
+    let imageUrl = "";
+
+    if (req.file) {
+      imageUrl = req.file.path; // URL de Cloudinary
+    }
 
     const news = await News.create({
       title,
